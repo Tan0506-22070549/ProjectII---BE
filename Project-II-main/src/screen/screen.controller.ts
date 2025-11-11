@@ -15,7 +15,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Screen } from './entities/screen.entity';
 
 @ApiTags('Screen Management') // Nhóm các API này dưới tên 'Screen Management' trên Swagger
-@Controller('screen')
+@Controller('screens')
 export class ScreenController {
   constructor(private readonly screenService: ScreenService) {}
 

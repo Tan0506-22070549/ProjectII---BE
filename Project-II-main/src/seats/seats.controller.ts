@@ -8,7 +8,7 @@ import { BulkGenerateDto } from './dto/bulk-generate.dto';
 import { BulkUpdateStatusDto } from './dto/bulk-update-status.dto';
 
 @ApiTags('Seats Management') // 👈 thêm dòng này
-@Controller('seats')
+@Controller('seat')
 export class SeatsController {
   constructor(private readonly service: SeatsService) {}
 

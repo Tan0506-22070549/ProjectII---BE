@@ -9,42 +9,33 @@ import { Screen } from './entities/screen.entity';
 export class ScreenService {
   constructor(
     @InjectRepository(Screen)
-    private screenRepository: Repository<Screen>,
+    private readonly screenRepo: Repository<Screen>,
   ) {}
 
-  async create(createScreenDto: CreateScreenDto): Promise<Screen> {
-    const newScreen = this.screenRepository.create(createScreenDto);
-    return this.screenRepository.save(newScreen);
+  async create(dto: CreateScreenDto): Promise<Screen> {
+    const entity = this.screenRepo.create(dto);
+    return this.screenRepo.save(entity);
   }
 
-  findAll(): Promise<Screen[]> {
-    return this.screenRepository.find();
+  async findAll(): Promise<Screen[]> {
+    return this.screenRepo.find({ order: { id: 'ASC' } });
   }
 
   async findOne(id: number): Promise<Screen> {
-    const screen = await this.screenRepository.findOneBy({ id });
-    if (!screen) {
-      throw new NotFoundException(`Screen with ID "${id}" not found`);
-    }
-    return screen;
+    const entity = await this.screenRepo.findOne({ where: { id } });
+    if (!entity) throw new NotFoundException(`Screen ${id} not found`);
+    return entity;
   }
 
-  async update(id: number, updateScreenDto: UpdateScreenDto): Promise<Screen> {
-    // preload sẽ lấy entity cũ và gộp (merge) với dữ liệu mới
-    const screen = await this.screenRepository.preload({
-      id: id,
-      ...updateScreenDto,
-    });
-    if (!screen) {
-      throw new NotFoundException(`Screen with ID "${id}" not found`);
-    }
-    return this.screenRepository.save(screen);
+  async update(id: number, dto: UpdateScreenDto): Promise<Screen> {
+    const entity = await this.screenRepo.preload({ id, ...dto });
+    if (!entity) throw new NotFoundException(`Screen ${id} not found`);
+    return this.screenRepo.save(entity);
   }
 
-  async remove(id: number): Promise<void> {
-    const result = await this.screenRepository.delete(id);
-    if (result.affected === 0) {
-      throw new NotFoundException(`Screen with ID "${id}" not found`);
-    }
+  async remove(id: number): Promise<{ success: true }> {
+    const res = await this.screenRepo.delete(id);
+    if (!res.affected) throw new NotFoundException(`Screen ${id} not found`);
+    return { success: true };
   }
-} 
+}
